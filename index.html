@@ -36,6 +36,7 @@ var Engine = Matter.Engine,
     Render = Matter.Render,
     Runner = Matter.Runner,
     Bodies = Matter.Bodies,
+    Events = Matter.Events,
     Body = Matter.Body,
     Composite = Matter.Composite,
     Mouse = Matter.Mouse,
@@ -59,20 +60,18 @@ var render = Render.create({
     }
 });
 
-var carRender = {
+var gameLayer = [];
 
-}
-var car = car(240,-30,304,68,32,20,108,carRender);
-
-// create two boxes and a ground
-var boxA = Bodies.rectangle(200, 200, 64, 64, {
+var gameLayer = [];
+gameLayer.push(car = car(240,-30,304,68,32,20,108));
+gameLayer.push(boxA = Bodies.rectangle(400, 200, 64, 64, {
     render: { 
         sprite: {
             texture: './img/box.jpeg'
         }
     }
-});
-var boxB = Bodies.rectangle(250, 70, 32, 32, {
+}))
+gameLayer.push(boxB = Bodies.rectangle(450, 70, 32, 32, {
     render: { 
         sprite: {
             texture: './img/box.jpeg',
@@ -80,8 +79,8 @@ var boxB = Bodies.rectangle(250, 70, 32, 32, {
             yScale: 0.5,
         }
     }
-});
-var boxC = Bodies.rectangle(290, 10, 48, 48, {
+}))
+gameLayer.push(boxC = Bodies.rectangle(490, 10, 48, 48, {
     render: { 
         sprite: {
             texture: './img/box.jpeg',
@@ -89,8 +88,8 @@ var boxC = Bodies.rectangle(290, 10, 48, 48, {
             yScale: 0.75,
         }
     }
-});
-var ground = Bodies.rectangle(W/2, H-40, 500, 32, {
+}))
+gameLayer.push(ground = Bodies.rectangle(W/2, H-40, 500, 32, {
     isStatic: true,
     angle: Math.PI * 0.03,
     render: { 
@@ -98,10 +97,28 @@ var ground = Bodies.rectangle(W/2, H-40, 500, 32, {
             texture: './img/cement.jpeg'
         }
     }
-})
+}))
+gameLayer.push(ground = Bodies.rectangle(W/2+500, H-40, 500, 32, {
+    isStatic: true,
+    angle: Math.PI * -0.03,
+    render: { 
+        sprite: {
+            texture: './img/cement.jpeg'
+        }
+    }
+}))
+gameLayer.push(ground = Bodies.rectangle(W/2+1050, H-40, 500, 32, {
+    isStatic: true,
+    angle: Math.PI * -0.01,
+    render: { 
+        sprite: {
+            texture: './img/cement.jpeg'
+        }
+    }
+}))
 
 // add all of the bodies to the world
-Composite.add(engine.world, [boxA, boxB, boxC, car,  ground]);
+Composite.add(engine.world, gameLayer);
 
 // run the renderer
 Render.run(render);
@@ -123,20 +140,25 @@ var mouse = Mouse.create(render.canvas),
             }
         }
     });
-
 Composite.add(engine.world, mouseConstraint);
-
 // keep the mouse in sync with rendering
 render.mouse = mouse;
+
+
+Events.on(render, "beforeRender", function(){
+    Render.lookAt(render,car.bodies[0], {
+            x:200, y: 200
+    });
+})
 
 window.addEventListener("keydown", function(e) {
     var key=e.keyCode;
     console.log(key);
     if (key==39){
-        Body.applyForce(car.bodies[0],car.bodies[0].position,{x:0.2,y:0.0})
+        Body.applyForce(car.bodies[0],car.bodies[0].position,{x:0.1,y:0.02})
     }
     if (key==37){
-        Body.applyForce(car.bodies[0],car.bodies[0].position,{x:-0.2,y:0.0})
+        Body.applyForce(car.bodies[0],car.bodies[0].position,{x:-0.1,y:0.02})
     }
     if (key==38){
         Body.applyForce(car.bodies[0],car.bodies[0].position,{x:0,y:-0.3})
