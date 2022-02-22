@@ -28,6 +28,10 @@
 </head>
 <body>
     <div class="canvas-container full-view" id="example"></div>
+    <script src="js/pathseg.js" ></script>
+    <script src="js/decomp.min.js" ></script>
+    <script src="js/path-data-polyfill.js" ></script>
+    <script src="js/svg.js" ></script>
     <script src="js/matter.min.js" ></script>
     <script src="js/car.js" ></script>
     <script >
@@ -37,6 +41,8 @@ var Engine = Matter.Engine,
     Runner = Matter.Runner,
     Bodies = Matter.Bodies,
     Events = Matter.Events,
+    Vertices = Matter.Vertices,
+    Svg = Matter.Svg,
     Body = Matter.Body,
     Composite = Matter.Composite,
     Mouse = Matter.Mouse,
@@ -63,15 +69,15 @@ var render = Render.create({
 var gameLayer = [];
 
 var gameLayer = [];
-gameLayer.push(car = car(240,-30,304,68,32,20,108));
-gameLayer.push(boxA = Bodies.rectangle(400, 200, 64, 64, {
+gameLayer.push(car = car(550,50,304,68,32,20,104));
+gameLayer.push(boxA = Bodies.rectangle(0, 100, 64, 64, {
     render: { 
         sprite: {
             texture: './img/box.jpeg'
         }
     }
 }))
-gameLayer.push(boxB = Bodies.rectangle(450, 70, 32, 32, {
+gameLayer.push(boxB = Bodies.rectangle(10, 70, 32, 32, {
     render: { 
         sprite: {
             texture: './img/box.jpeg',
@@ -80,45 +86,7 @@ gameLayer.push(boxB = Bodies.rectangle(450, 70, 32, 32, {
         }
     }
 }))
-gameLayer.push(boxC = Bodies.rectangle(490, 10, 48, 48, {
-    render: { 
-        sprite: {
-            texture: './img/box.jpeg',
-            xScale: 0.75,
-            yScale: 0.75,
-        }
-    }
-}))
-gameLayer.push(ground = Bodies.rectangle(W/2, H-40, 500, 32, {
-    isStatic: true,
-    angle: Math.PI * 0.03,
-    render: { 
-        sprite: {
-            texture: './img/cement.jpeg'
-        }
-    }
-}))
-gameLayer.push(ground = Bodies.rectangle(W/2+500, H-40, 500, 32, {
-    isStatic: true,
-    angle: Math.PI * -0.03,
-    render: { 
-        sprite: {
-            texture: './img/cement.jpeg'
-        }
-    }
-}))
-gameLayer.push(ground = Bodies.rectangle(W/2+1050, H-40, 500, 32, {
-    isStatic: true,
-    angle: Math.PI * -0.01,
-    render: { 
-        sprite: {
-            texture: './img/cement.jpeg'
-        }
-    }
-}))
 
-// add all of the bodies to the world
-Composite.add(engine.world, gameLayer);
 
 // run the renderer
 Render.run(render);
@@ -145,20 +113,66 @@ Composite.add(engine.world, mouseConstraint);
 render.mouse = mouse;
 
 
-Events.on(render, "beforeRender", function(){
-    Render.lookAt(render,car.bodies[0], {
+loadSvg('img/terrain2.svg', function(root){
+    var lines = select(root, 'polyline');
+    var line=lines[0]
+    var points = line.getAttribute('points').trim().split(' ').map(function(point){
+        var parts = point.split(",")
+        return (parts[0]*1.0).toFixed(0)+' '+(parts[1]*1.0).toFixed(0)
+    })
+    var vertices = Vertices.fromPath(points.join(' '))
+    var prev = null
+    var minX = 9999999
+    var maxX = 0
+    var filteredPoints = vertices.filter(function(item, pos) {
+        if (pos==0){
+            prev = item
+            minX = Math.min(minX,item.x)
+            maxX = Math.max(maxX,item.x)
+            return true
+        } else {
+            var diff = (item.x-prev.x)*(item.x-prev.x) +  (item.y-prev.y)*(item.y-prev.y)
+            if (diff > 4){
+                prev = item
+                minX = Math.min(minX,item.x)
+                maxX = Math.max(maxX,item.x)
+                return true
+            } else {
+                return false
+            }
+        }
+        
+    })
+    
+    var terrain = Bodies.fromVertices((maxX-minX)*20/2-W, 500, Vertices.scale(filteredPoints,20,20), {
+        isStatic: true,
+        render: {
+            fillStyle: '#808080',
+        }
+    }, true);
+    //console.log('vertices',vertices)
+    Composite.add(engine.world, terrain);
+
+
+    // add all of the bodies to the world
+    Composite.add(engine.world, gameLayer);
+
+    Events.on(render, "beforeRender", function(){
+        Render.lookAt(render,car.bodies[0], {
             x:200, y: 200
-    });
+        });
+    })
+
 })
 
 window.addEventListener("keydown", function(e) {
     var key=e.keyCode;
     console.log(key);
     if (key==39){
-        Body.applyForce(car.bodies[0],car.bodies[0].position,{x:0.1,y:0.02})
+        Body.applyForce(car.bodies[0],car.bodies[0].position,{x:0.1,y:0.01})
     }
     if (key==37){
-        Body.applyForce(car.bodies[0],car.bodies[0].position,{x:-0.1,y:0.02})
+        Body.applyForce(car.bodies[0],car.bodies[0].position,{x:-0.1,y:0.01})
     }
     if (key==38){
         Body.applyForce(car.bodies[0],car.bodies[0].position,{x:0,y:-0.3})

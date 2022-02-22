@@ -1,33 +1,33 @@
-function car(xx, yy, width, height, wheelSize, wheelYoffset, wheelSep, renderObj) {
+function car(xx, yy, width, height, wheelSize, wheelYoffset, wheelSep, renderObj, path) {
     var Body = Matter.Body,
         Bodies = Matter.Bodies,
         Composite = Matter.Composite,
         Constraint = Matter.Constraint;
 
     var group = Body.nextGroup(true),
-        wheelBase = 20,
         wheelSep = wheelSep || width * 0.5,
-        wheelAOffset = -wheelSep + wheelBase,
-        wheelBOffset = wheelSep - wheelBase,
+        wheelAOffset = -wheelSep + 20,
+        wheelBOffset = wheelSep,
         wheelYOffset = wheelYoffset || 0;
 
-    var renderObj = renderObj || {
-    }
-    renderObj.sprite = {
-        texture: './img/car.png'
-    }
+    var renderObj = renderObj || {sprite : { texture: './img/car.png' }}
 
-    var car = Composite.create({ label: 'Car' }),
-        body = Bodies.rectangle(xx, yy, width, height, { 
-            collisionFilter: {
-                group: group
-            },
-            render: renderObj,
-            chamfer: {
-                radius: height * 0.5
-            },
-            density: 0.0002
-        });
+    var path = "0 20 120 5 170 0 300 45 290 65 40 70 5 60";
+    var vertex = Vertices.fromPath(path);
+    
+    var body = Bodies.fromVertices(width/2, height/2, vertex, {
+        collisionFilter: {
+            group: group
+        },
+        render: renderObj,
+        chamfer: {
+            radius: height * 0.5
+        },
+        density: 0.0002
+    }, true);
+
+
+    var car = Composite.create({ label: 'Car' })
 
     var wheelA = Bodies.circle(xx + wheelAOffset, yy + wheelYOffset, wheelSize, { 
         collisionFilter: {
@@ -68,7 +68,7 @@ function car(xx, yy, width, height, wheelSize, wheelYoffset, wheelSep, renderObj
         stiffness: 1,
         length: 0
     });
-    
+
     Composite.addBody(car, body);
     Composite.addBody(car, wheelA);
     Composite.addBody(car, wheelB);
