@@ -157,28 +157,41 @@ loadSvg('img/terrain2.svg', function(root){
     // add all of the bodies to the world
     Composite.add(engine.world, gameLayer);
 
+    var keysDown=[];
+    document.addEventListener("keydown", event => {
+        var pos=keysDown.indexOf(event.keyCode);
+        if (pos==-1){
+            keysDown.push(event.keyCode);
+            console.log('down',keysDown);
+        }
+    });
+    document.addEventListener("keyup", event => {
+        var pos=keysDown.indexOf(event.keyCode);
+        if (pos>=0){
+            keysDown.splice(pos,1)
+            console.log('up',keysDown);
+        }
+    });
     Events.on(render, "beforeRender", function(){
+        for (var i=0; i<keysDown.length; i++){
+            var key = keysDown[i];
+            console.log(key)
+            if (key==39){
+                Body.applyForce(car.bodies[0],car.bodies[0].position,{x:0.02,y:0.002})
+            }
+            if (key==37){
+                Body.applyForce(car.bodies[0],car.bodies[0].position,{x:-0.02,y:0.002})
+            }
+            if (key==38){
+                Body.applyForce(car.bodies[0],car.bodies[0].position,{x:0,y:-0.03})
+            }
+        }
         Render.lookAt(render,car.bodies[0], {
             x:200, y: 200
         });
     })
 
 })
-
-window.addEventListener("keydown", function(e) {
-    var key=e.keyCode;
-    console.log(key);
-    if (key==39){
-        Body.applyForce(car.bodies[0],car.bodies[0].position,{x:0.1,y:0.01})
-    }
-    if (key==37){
-        Body.applyForce(car.bodies[0],car.bodies[0].position,{x:-0.1,y:0.01})
-    }
-    if (key==38){
-        Body.applyForce(car.bodies[0],car.bodies[0].position,{x:0,y:-0.3})
-    }
-})
-
     </script>
 </body>
 </html>
