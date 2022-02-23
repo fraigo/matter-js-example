@@ -1,4 +1,13 @@
-function car(xx, yy, width, height, wheelSize, wheelYoffset, wheelSep, renderObj, path) {
+function car(xx, yy) {
+    var width=304
+    var height=68
+    var wheelSize=32
+    var wheelYoffset=20
+    var wheelSep=104
+    var mass=60
+    var friction=3.0
+    var torque=0.3
+
     var Body = Matter.Body,
         Bodies = Matter.Bodies,
         Composite = Matter.Composite,
@@ -12,7 +21,7 @@ function car(xx, yy, width, height, wheelSize, wheelYoffset, wheelSep, renderObj
 
     var renderObj = renderObj || {sprite : { texture: './img/car.png' }}
 
-    var path = "0 20 120 5 170 0 300 45 290 65 40 70 5 60";
+    var path = "0 20 120 5 170 0 300 45 280 65 40 70 5 60";
     var vertex = Vertices.fromPath(path);
     
     var body = Bodies.fromVertices(width/2, height/2, vertex, {
@@ -74,6 +83,16 @@ function car(xx, yy, width, height, wheelSize, wheelYoffset, wheelSep, renderObj
     Composite.addBody(car, wheelB);
     Composite.addConstraint(car, axelA);
     Composite.addConstraint(car, axelB);
+
+    body.mass = mass
+    wheelA.friction = friction
+    wheelB.friction = friction
+    
+    car.body = body
+    car.wheel1 = wheelA
+    car.wheel1.vel = 0.01
+    car.wheel2 = wheelB
+    car.wheel2.vel = torque
 
     return car;
 };
