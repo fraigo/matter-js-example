@@ -25,6 +25,7 @@ function car(xx, yy) {
     var vertex = Vertices.fromPath(path);
     
     var body = Bodies.fromVertices(width/2, height/2, vertex, {
+        isStatic: true,
         collisionFilter: {
             group: group
         },
@@ -93,6 +94,10 @@ function car(xx, yy) {
     car.wheel1.vel = 0.01
     car.wheel2 = wheelB
     car.wheel2.vel = torque
+
+    setTimeout(function(){
+        Body.setStatic(body,false)
+    },1500)
 
     return car;
 };

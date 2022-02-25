@@ -34,6 +34,7 @@
     <script src="js/svg.js" ></script>
     <script src="js/matter.min.js" ></script>
     <script src="js/car.js" ></script>
+    <script src="js/motorbike.js" ></script>
     <script >
         // module aliases
 var Engine = Matter.Engine,
@@ -69,7 +70,12 @@ var render = Render.create({
 var gameLayer = [];
 
 var gameLayer = [];
-gameLayer.push(car = car(550,50));
+var carType = document.location.search.replace('?','');
+if (carType == ''){
+    carType = 'car'
+}
+gameLayer.push(car = window[carType](550,50));
+/*
 gameLayer.push(boxA = Bodies.rectangle(0, 100, 64, 64, {
     render: { 
         sprite: {
@@ -86,7 +92,7 @@ gameLayer.push(boxB = Bodies.rectangle(10, 70, 32, 32, {
         }
     }
 }))
-
+*/
 
 // run the renderer
 Render.run(render);
