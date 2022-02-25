@@ -1,99 +1,104 @@
-function motorbike(xx,yy) {
-  var width=300
-  var height=200
-  var wheelSize=40
-  var wheelYoffset=60
-  var wheelSep=104
-  var mass=20
-  var friction=3.0
-  var torque=0.5
+function motorbike(xx, yy) {
+    var width = 230
+    var height = 115
+    var wheelSize = 48
+    var wheelScale = 1.6
+    var wheelAYOffset = 45
+    var wheelBYOffset = 60
+    var wheelSep = 104
+    var mass = 90
+    var friction = 100.0
+    var torque = 2
 
-  var Body = Matter.Body 
-    Bodies = Matter.Bodies 
-    Composite = Matter.Composite 
+    var Body = Matter.Body
+    Bodies = Matter.Bodies
+    Composite = Matter.Composite
     Constraint = Matter.Constraint;
 
-  var group = Body.nextGroup(true),
-    wheelSep = wheelSep || width * 0.5 ,
-    wheelAOffset = -wheelSep + 20 ,
-    wheelBOffset = wheelSep ,
-    wheelYOffset = wheelYoffset || 0;
+    var group = Body.nextGroup(true),
+        wheelSep = wheelSep || width * 0.5,
+        wheelAOffset = -wheelSep + 20,
+        wheelBOffset = wheelSep;
 
 
-  var path = "45 55 90 60 95 75 135 75 150 60 180 60 210 50 220 35 230 40 230 55 245 70 250 90 225 100 200 120 200 150 125 150 110 105 100 100 70 100 30 100 20 100 30 85 30 75 55 70 45 55";
-  var vertex = Vertices.fromPath(path);
-    
+    var path = "30 25 205 5 245 80 185 120 5 75";
+    var vertex = Vertices.fromPath(path);
+    var min = height
+    var max = 0
+    vertex.forEach(function (vert) {
+        min = Math.min(vert.x, min)
+        max = Math.max(vert.x, max)
+    })
+    console.log(min, max)
+    var path1=[]
+    vertex.forEach(function (vert) {
+        path1.push(vert.x-min)
+        path1.push(vert.y)
+    })
+    console.log(path1.join(' '))
+
     var body = Bodies.fromVertices(xx, yy, vertex, {
         isStatic: true,
         collisionFilter: {
             group: group
         },
         render: {
-            //fillStyle : "#FFFFFF",
+            sprite: {
+                texture: './img/motorbike.png'
+            }
         },
-        chamfer: {
-            radius: height * 0.5
-        }
+        density: 0.005
     }, true);
 
-    var center = Bodies.circle(xx+15,yy+20,20,{
-        density: 0.0002,
-        render:{
-            sprite : { 
-                texture: './img/motorbike.png'
-            }        
-        }
-    });
-    body.parts.push(center);
 
 
-    var motorbike = Composite.create({ 
+    var motorbike = Composite.create({
         label: 'Car',
     })
 
-    var wheelA = Bodies.circle(xx + wheelAOffset, yy + wheelYOffset, wheelSize, { 
+    var wheelA = Bodies.circle(xx + wheelAOffset, yy + wheelAYOffset - 20, wheelSize, {
         collisionFilter: {
             group: group
         },
         render: {
-            fillStyle : "#FFFFFF",
+            fillStyle: "#FFFFFF",
             sprite: {
                 texture: './img/wheel1.png',
-                xScale: 1.2,
-                yScale: 1.2,
+                xScale: wheelScale,
+                yScale: wheelScale,
             }
         },
         friction: 0.8
     });
-                
-    var wheelB = Bodies.circle(xx + wheelBOffset, yy + wheelYOffset, wheelSize, { 
+
+    var wheelB = Bodies.circle(xx + wheelBOffset, yy + wheelBYOffset, wheelSize, {
         collisionFilter: {
             group: group
         },
         render: {
-            fillStyle : "#FFFFFF",
+            fillStyle: "#FFFFFF",
             sprite: {
                 texture: './img/wheel1.png',
-                xScale: 1.2,
-                yScale: 1.2,
+                xScale: wheelScale,
+                yScale: wheelScale,
             }
         },
         friction: 0.8
     });
-                
+
     var axelA = Constraint.create({
         bodyB: body,
-        pointB: { x: wheelAOffset, y: wheelYOffset },
+        pointB: { x: wheelAOffset, y: wheelAYOffset },
         bodyA: wheelA,
-        stiffness: 1,
+        stiffness: 0.9,
         length: 0
     });
-                    
+
     var axelB = Constraint.create({
         bodyB: body,
-        pointB: { x: wheelBOffset, y: wheelYOffset },
+        pointB: { x: wheelBOffset, y: wheelBYOffset },
         bodyA: wheelB,
-        stiffness: 1,
+        stiffness: 0.9,
         length: 0
     });
 
@@ -106,16 +111,16 @@ function motorbike(xx,yy) {
     body.mass = mass
     wheelA.friction = friction
     wheelB.friction = friction
-    
+
     motorbike.body = body
     motorbike.wheel1 = wheelA
-    motorbike.wheel1.vel = 0.01
+    motorbike.wheel1.vel = torque
     motorbike.wheel2 = wheelB
     motorbike.wheel2.vel = torque
 
-    setTimeout(function(){
-        Body.setStatic(body,false)
-    },1500)
+    setTimeout(function () {
+        Body.setStatic(body, false)
+    }, 1500)
 
     return motorbike;
 };
