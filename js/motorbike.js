@@ -2,13 +2,14 @@ function motorbike(xx, yy) {
     var width = 230
     var height = 115
     var wheelSize = 48
-    var wheelScale = 1.6
+    var wheelScale = 1
     var wheelAYOffset = 45
     var wheelBYOffset = 60
     var wheelSep = 104
     var mass = 60
     var friction = 100.0
     var torque = 2
+    var wheelStiffness = 0.5
 
     var Body = Matter.Body
     Bodies = Matter.Bodies
@@ -63,7 +64,7 @@ function motorbike(xx, yy) {
         render: {
             fillStyle: "#FFFFFF",
             sprite: {
-                texture: './img/wheel1.png',
+                texture: './img/wheel2.png',
                 xScale: wheelScale,
                 yScale: wheelScale,
             }
@@ -78,7 +79,7 @@ function motorbike(xx, yy) {
         render: {
             fillStyle: "#FFFFFF",
             sprite: {
-                texture: './img/wheel1.png',
+                texture: './img/wheel2.png',
                 xScale: wheelScale,
                 yScale: wheelScale,
             }
@@ -90,7 +91,7 @@ function motorbike(xx, yy) {
         bodyB: body,
         pointB: { x: wheelAOffset, y: wheelAYOffset },
         bodyA: wheelA,
-        stiffness: 0.9,
+        stiffness: wheelStiffness,
         length: 0
     });
 
@@ -98,7 +99,7 @@ function motorbike(xx, yy) {
         bodyB: body,
         pointB: { x: wheelBOffset, y: wheelBYOffset },
         bodyA: wheelB,
-        stiffness: 0.9,
+        stiffness: wheelStiffness,
         length: 0
     });
 
@@ -120,7 +121,7 @@ function motorbike(xx, yy) {
 
     setTimeout(function () {
         Body.setStatic(body, false)
-    }, 1500)
+    }, 500)
 
     return motorbike;
 };

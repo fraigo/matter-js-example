@@ -97,7 +97,7 @@ function car(xx, yy) {
 
     setTimeout(function(){
         Body.setStatic(body,false)
-    },1500)
+    },500)
 
     return car;
 };
