@@ -6,7 +6,7 @@ function motorbike(xx, yy) {
     var wheelAYOffset = 45
     var wheelBYOffset = 60
     var wheelSep = 104
-    var mass = 90
+    var mass = 60
     var friction = 100.0
     var torque = 2
 

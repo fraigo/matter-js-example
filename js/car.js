@@ -4,9 +4,9 @@ function car(xx, yy) {
     var wheelSize=32
     var wheelYoffset=20
     var wheelSep=104
-    var mass=60
+    var mass=50
     var friction=3.0
-    var torque=0.3
+    var torque=0.6
 
     var Body = Matter.Body,
         Bodies = Matter.Bodies,

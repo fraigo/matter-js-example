@@ -167,10 +167,12 @@ loadSvg('img/terrain2.svg', function(root){
             if (key==39){
                 car.wheel1.torque=car.wheel1.vel
                 car.wheel2.torque=car.wheel2.vel
+                Body.applyForce(car.wheel2,car.wheel2.position,{x:-0.01,y:0.02})
             }
             if (key==37){
                 car.wheel1.torque=-car.wheel1.vel
                 car.wheel2.torque=-car.wheel2.vel
+                Body.applyForce(car.wheel2,car.wheel2.position,{x:0.01,y:0.02})
             }
             if (key==38){
                 Body.applyForce(car.body,car.body.position,{x:0,y:-0.03})
