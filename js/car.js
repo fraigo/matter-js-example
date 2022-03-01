@@ -26,6 +26,7 @@ function car(xx, yy) {
     
     var body = Bodies.fromVertices(width/2, height/2, vertex, {
         isStatic: true,
+        label: 'car',
         collisionFilter: {
             group: group
         },
@@ -40,6 +41,7 @@ function car(xx, yy) {
     var car = Composite.create({ label: 'Car' })
 
     var wheelA = Bodies.circle(xx + wheelAOffset, yy + wheelYOffset, wheelSize, { 
+        label: 'car',
         collisionFilter: {
             group: group
         },
@@ -52,6 +54,7 @@ function car(xx, yy) {
     });
                 
     var wheelB = Bodies.circle(xx + wheelBOffset, yy + wheelYOffset, wheelSize, { 
+        label: 'car',
         collisionFilter: {
             group: group
         },

@@ -42,6 +42,7 @@ var Engine = Matter.Engine,
     Runner = Matter.Runner,
     Bodies = Matter.Bodies,
     Events = Matter.Events,
+    World = Matter.World,
     Vertices = Matter.Vertices,
     Svg = Matter.Svg,
     Body = Matter.Body,
@@ -75,15 +76,17 @@ if (carType == ''){
     carType = 'car'
 }
 gameLayer.push(car = window[carType](500,400));
-/*
-gameLayer.push(boxA = Bodies.rectangle(0, 100, 64, 64, {
+
+gameLayer.push(boxA = Bodies.rectangle(1000, 100, 64, 64, {
+    label: 'box',
     render: { 
         sprite: {
             texture: './img/box.jpeg'
         }
     }
 }))
-gameLayer.push(boxB = Bodies.rectangle(10, 70, 32, 32, {
+gameLayer.push(boxB = Bodies.rectangle(1200, 70, 32, 32, {
+    label: 'box',
     render: { 
         sprite: {
             texture: './img/box.jpeg',
@@ -92,7 +95,30 @@ gameLayer.push(boxB = Bodies.rectangle(10, 70, 32, 32, {
         }
     }
 }))
-*/
+Events.on(engine, 'collisionStart', function(event) {
+        var pairs = event.pairs;
+        // change object colours to show those starting a collision
+        for (var i = 0; i < pairs.length; i++) {
+            var bodyA = pairs[i].bodyA
+            var bodyB = pairs[i].bodyB
+            //console.log('Pair',i,bodyA.label,bodyB.label)
+            if (bodyA.label=='car' && bodyB.label=='box'){
+                var proc=setInterval(function(){
+                    bodyB.render.sprite.xScale*=0.9
+                    bodyB.render.sprite.yScale*=0.9
+                    bodyB.scale*=0.9
+                },60)
+                setTimeout(function(){
+                    bodyB.collisionFilter.group=-1
+                },100)
+                setTimeout(function(){
+                    clearInterval(proc)
+                    Composite.remove(engine.world,bodyB)
+                },500)
+            }
+        }
+});
+
 
 // run the renderer
 Render.run(render);
@@ -152,8 +178,8 @@ loadSvg('img/terrain2.svg', function(root){
     var terrain = Bodies.fromVertices((maxX-minX)*18/2-W, 500, Vertices.scale(filteredPoints,18,18), {
         isStatic: true,
         render: {
-            fillStyle: '#808080',
-            background: 'img/box.jpeg'
+            strokeStyle : '#808080',
+            fillStyle: '#808080'
         }
     }, true);
 
